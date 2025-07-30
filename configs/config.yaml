@@ -1,0 +1,26 @@
+# Configuration for Recruiter Chatbot
+
+# Model settings
+model:
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  llm_model: "microsoft/DialoGPT-medium"
+  max_tokens: 512
+  temperature: 0.7
+
+# Vector database settings
+vector_db:
+  persist_directory: "./data/chroma_db"
+  collection_name: "career_stories"
+  chunk_size: 1000
+  chunk_overlap: 200
+
+# Streamlit settings
+streamlit:
+  page_title: "Career Chatbot"
+  page_icon: "🤖"
+  layout: "wide"
+
+# RAG settings
+rag:
+  top_k: 3
+  similarity_threshold: 0.7
