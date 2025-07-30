@@ -3,7 +3,7 @@ Streamlit web application for the recruiter chatbot.
 """
 
 import streamlit as st
-from main import RAGSystem
+from src.main import RAGSystem
 import yaml
 
 def load_config():

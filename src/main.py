@@ -2,9 +2,9 @@
 Main entry point for the Recruiter Chatbot application.
 """
 
-from rag_system import RAGSystem
-from document_processor import DocumentProcessor
-from vector_store import VectorStore
+from src.rag_system import RAGSystem
+from src.document_processor import DocumentProcessor
+from src.vector_store import VectorStore
 import logging
 
 logging.basicConfig(level=logging.INFO)

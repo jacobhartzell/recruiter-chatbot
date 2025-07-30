@@ -26,9 +26,6 @@ data/chroma_db/
 # Model cache
 models/cache/
 
-# Streamlit
-.streamlit/
-
 # IDE
 .vscode/
 .idea/
