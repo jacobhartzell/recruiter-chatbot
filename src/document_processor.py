@@ -2,7 +2,7 @@
 Document processing utilities for loading and chunking documents.
 """
 
-from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders import DirectoryLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 
