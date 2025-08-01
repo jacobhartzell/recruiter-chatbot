@@ -30,6 +30,10 @@ class VectorStore:
     
     def add_documents(self, documents: List[str], metadatas: List[Dict]):
         """Add documents and their embeddings to the vector store."""
+        # Handle empty lists gracefully
+        if not documents:
+            return
+            
         # Generate unique IDs for each document
         ids = [str(uuid.uuid4()) for _ in range(len(documents))]
         
