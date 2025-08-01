@@ -22,6 +22,7 @@ venv.bak/
 
 # ChromaDB
 data/chroma_db/
+chroma_db/
 
 # Model cache
 models/cache/

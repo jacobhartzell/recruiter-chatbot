@@ -2,7 +2,7 @@
 Document processing utilities for loading and chunking documents.
 """
 
-from langchain_community.document_loaders import DirectoryLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 
@@ -20,10 +20,15 @@ class DocumentProcessor:
     
     def load_documents(self, directory_path: str) -> List:
         """Load documents from directory."""
-        # TODO: Implement document loading using LangChain loaders
-        pass
+        loader = DirectoryLoader(
+            directory_path,
+            glob="**/*.md",
+            loader_cls=TextLoader
+        )
+        documents = loader.load()
+        return documents
     
     def chunk_documents(self, documents: List) -> List:
         """Split documents into smaller chunks."""
-        # TODO: Implement document chunking
-        pass
+        chunks = self.text_splitter.split_documents(documents)
+        return chunks
