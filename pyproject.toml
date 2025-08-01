@@ -1,0 +1,32 @@
+[project]
+name = "recruiter-chatbot"
+version = "0.1.0"
+description = "AI-powered recruiter chatbot with RAG capabilities"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.28.0",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.20",
+    "chromadb>=0.4.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "onnxruntime>=1.22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+]
