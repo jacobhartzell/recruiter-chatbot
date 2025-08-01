@@ -28,3 +28,4 @@ dependencies:
   - pip
   - pip:
     - sentence-transformers  # Alternative to ONNX if needed
+  # dummy commit
