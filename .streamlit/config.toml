@@ -1,3 +1,7 @@
+# Updated: 2025-08-01 - trigger rebuild with minimal environment
+[server]
+maxUploadSize = 200
+
 [theme]
 primaryColor = "#FF6B6B"
 backgroundColor = "#FFFFFF"
