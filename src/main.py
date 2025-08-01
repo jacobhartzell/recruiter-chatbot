@@ -2,6 +2,14 @@
 Main entry point for the Recruiter Chatbot application.
 """
 
+# SQLite compatibility fix for Streamlit Cloud
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 from src.rag_system import RAGSystem
 from src.document_processor import DocumentProcessor
 from src.vector_store import VectorStore
