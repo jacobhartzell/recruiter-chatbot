@@ -2,13 +2,13 @@
 Streamlit web application for the recruiter chatbot.
 """
 
-# SQLite compatibility fix for Streamlit Cloud
-import sys
-try:
-    __import__('pysqlite3')
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except ImportError:
-    pass
+# SQLite compatibility fix for Streamlit Cloud (commented out for now - not using ChromaDB yet)
+# import sys
+# try:
+#     __import__('pysqlite3')
+#     sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# except ImportError:
+#     pass
 
 import streamlit as st
 from src.llm_interface import LLMInterface
