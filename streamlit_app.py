@@ -2,19 +2,39 @@
 Streamlit web application for the recruiter chatbot.
 """
 
+# SQLite compatibility fix for Streamlit Cloud
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import streamlit as st
-from src.main import RAGSystem
+from src.llm_interface import LLMInterface
 import yaml
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def load_config():
     """Load configuration from YAML file."""
     with open('configs/config.yaml', 'r') as file:
         return yaml.safe_load(file)
 
-def initialize_rag_system():
-    """Initialize the RAG system."""
-    # TODO: Initialize RAG system components
-    pass
+@st.cache_resource
+def initialize_llm():
+    """Initialize the LLM interface."""
+    try:
+        llm = LLMInterface()
+        logger.info("LLM initialized successfully")
+        return llm
+    except Exception as e:
+        logger.error(f"Failed to initialize LLM: {e}")
+        st.error(f"Failed to initialize chatbot: {e}")
+        return None
 
 def main():
     """Main Streamlit application."""
@@ -27,12 +47,12 @@ def main():
     )
     
     st.title("🤖 Career Chatbot")
-    st.write("Ask me anything about my professional experience!")
+    st.write("Hi! I'm an AI representing a job candidate. Ask me anything about my professional experience and qualifications!")
     
-    # Initialize RAG system
-    if 'rag_system' not in st.session_state:
-        with st.spinner("Initializing chatbot..."):
-            st.session_state.rag_system = initialize_rag_system()
+    # Initialize LLM
+    llm = initialize_llm()
+    if llm is None:
+        st.stop()  # Stop execution if LLM failed to initialize
     
     # Chat interface
     if 'messages' not in st.session_state:
@@ -53,9 +73,14 @@ def main():
         # Generate assistant response
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                # TODO: Use RAG system to generate response
-                response = "This is a placeholder response. The RAG system will be implemented soon!"
-                st.markdown(response)
+                try:
+                    # Generate response using LLM (no context for now)
+                    response = llm.generate_response(prompt)
+                    st.markdown(response)
+                except Exception as e:
+                    logger.error(f"Error generating response: {e}")
+                    response = "I apologize, but I'm experiencing technical difficulties. Please try again."
+                    st.markdown(response)
         
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
