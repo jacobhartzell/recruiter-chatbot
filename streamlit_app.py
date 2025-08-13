@@ -2,16 +2,16 @@
 Streamlit web application for the recruiter chatbot.
 """
 
-# SQLite compatibility fix for Streamlit Cloud (commented out for now - not using ChromaDB yet)
-# import sys
-# try:
-#     __import__('pysqlite3')
-#     sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-# except ImportError:
-#     pass
+# SQLite compatibility fix for Streamlit Cloud
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
 
 import streamlit as st
-from src.llm_interface import LLMInterface
+from src.rag_system import RAGSystem
 import yaml
 import logging
 
@@ -25,14 +25,20 @@ def load_config():
         return yaml.safe_load(file)
 
 @st.cache_resource
-def initialize_llm():
-    """Initialize the LLM interface."""
+def initialize_rag_system():
+    """Initialize the RAG system."""
     try:
-        llm = LLMInterface()
-        logger.info("LLM initialized successfully")
-        return llm
+        rag_system = RAGSystem()
+        logger.info("RAG system initialized successfully")
+        
+        # Show initialization stats
+        stats = rag_system.get_stats()
+        if "error" not in stats:
+            st.success(f"✅ Loaded {stats['documents_loaded']} document chunks")
+        
+        return rag_system
     except Exception as e:
-        logger.error(f"Failed to initialize LLM: {e}")
+        logger.error(f"Failed to initialize RAG system: {e}")
         st.error(f"Failed to initialize chatbot: {e}")
         return None
 
@@ -49,10 +55,10 @@ def main():
     st.title("🤖 Career Chatbot")
     st.write("Hi! I'm an AI representing a job candidate. Ask me anything about my professional experience and qualifications!")
     
-    # Initialize LLM
-    llm = initialize_llm()
-    if llm is None:
-        st.stop()  # Stop execution if LLM failed to initialize
+    # Initialize RAG system
+    rag_system = initialize_rag_system()
+    if rag_system is None:
+        st.stop()  # Stop execution if RAG system failed to initialize
     
     # Chat interface
     if 'messages' not in st.session_state:
@@ -72,10 +78,10 @@ def main():
         
         # Generate assistant response
         with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
+            with st.spinner("Searching my experience and thinking..."):
                 try:
-                    # Generate response using LLM (no context for now)
-                    response = llm.generate_response(prompt)
+                    # Generate response using RAG system
+                    response = rag_system.query(prompt)
                     st.markdown(response)
                 except Exception as e:
                     logger.error(f"Error generating response: {e}")
