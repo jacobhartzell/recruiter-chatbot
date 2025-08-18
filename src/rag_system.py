@@ -148,6 +148,28 @@ class RAGSystem:
             logger.error(f"Error adding documents: {e}")
             return 0
     
+    def reset_vector_store(self):
+        """Reset the vector store by clearing all documents."""
+        try:
+            logger.info("Resetting vector store...")
+            # Delete the collection
+            self.vector_store.client.delete_collection(self.vector_store.collection_name)
+            
+            # Recreate the collection
+            self.vector_store.collection = self.vector_store.client.get_or_create_collection(
+                name=self.vector_store.collection_name,
+                metadata={"hnsw:space": "cosine"}
+            )
+            
+            # Reload documents
+            self._initialize_documents()
+            
+            logger.info("Vector store reset successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Error resetting vector store: {e}")
+            return False
+    
     def get_stats(self) -> Dict[str, Any]:
         """Get system statistics."""
         try:
