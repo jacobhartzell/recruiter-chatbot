@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 class LLMInterface:
     """Interface for HuggingFace models using OpenAI-compatible API."""
     
-    def __init__(self, model_name: str = "deepseek-ai/DeepSeek-V3-0324:novita", max_tokens: int = 512, temperature: float = 0.7):
+    def __init__(self, model_name: str = "deepseek-ai/DeepSeek-V3-0324:novita", 
+                 max_tokens: int = 512, 
+                 temperature: float = 0.7
+                 ):
         """Initialize LLM interface with HuggingFace OpenAI-compatible API."""
         self.model_name = model_name
         self.max_tokens = max_tokens
