@@ -6,10 +6,17 @@ import os
 import logging
 from typing import Optional
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
+from google.genai.types import Content, CreateCachedContentConfig, HttpOptions, Part
+from openai import OpenAI #this should eventually go
+
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Use the variables
+PROJECT_ID = os.getenv('GCP_PROJECT_ID')
+LOCATION = os.getenv('GCP_LOCATION')
 
 logger = logging.getLogger(__name__)
 
@@ -23,21 +30,47 @@ class LLMInterface:
         self.temperature = temperature
         
         # HuggingFace API configuration
-        self.api_token = os.getenv("HUGGINGFACE_API_TOKEN")
+        # self.api_token = os.getenv("HUGGINGFACE_API_TOKEN")
         
-        if not self.api_token:
-            logger.error("HUGGINGFACE_API_TOKEN not found in environment variables")
-            raise ValueError("HuggingFace API token is required")
+        # if not self.api_token:
+        #    logger.error("HUGGINGFACE_API_TOKEN not found in environment variables")
+        #    raise ValueError("HuggingFace API token is required")
         
         # Initialize OpenAI client with HuggingFace router
-        self.client = OpenAI(
-            base_url="https://router.huggingface.co/v1",
-            api_key=self.api_token
+        # self.client = OpenAI(
+        #    base_url="https://router.huggingface.co/v1",
+        #    api_key=self.api_token
+        # )
+        
+        # Load environment variables from .env file
+        load_dotenv()
+
+        # Use the variables
+        PROJECT_ID = os.getenv('GCP_PROJECT_ID')
+        LOCATION = os.getenv('GCP_LOCATION')
+
+        
+        # Initalize Vertex AI
+       
+        # Only run this block for Vertex AI API
+        self.client = genai.Client(
+            vertexai=True, project=PROJECT_ID, location=LOCATION
         )
         
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
     
+
+    
     def generate_response(self, prompt: str, context: Optional[str] = None) -> str:
+        
+        response = self.client.models.generate_content(
+                        model='gemini-2.0-flash-001', contents='Why is the sky blue?'
+                    )
+        return response
+        
+        
+        
+        
         """Generate response using HuggingFace OpenAI-compatible API."""
         try:
             # Build the system message with context and candidate instructions

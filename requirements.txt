@@ -11,3 +11,5 @@ onnxruntime
 pandas
 numpy
 nb-clean
+ipykernel
+
