@@ -12,4 +12,4 @@ pandas
 numpy
 nb-clean
 ipykernel
-
+google-cloud-aiplatform

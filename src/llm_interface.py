@@ -7,9 +7,9 @@ import logging
 from typing import Optional
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 from google.genai.types import Content, CreateCachedContentConfig, HttpOptions, Part
 from openai import OpenAI #this should eventually go
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -58,24 +58,40 @@ class LLMInterface:
         )
         
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
+
     
 
     
     def generate_response(self, prompt: str, context: Optional[str] = None) -> str:
         
-        response = self.client.models.generate_content(
-                        model='gemini-2.0-flash-001', contents='Why is the sky blue?'
-                    )
+        try:
+            # Build the system message with context and candidate instructions
+            system_message = self._build_system_message(context)
+            
+            content_response = self.client.models.generate_content(
+                            model=self.model_name, 
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                system_instruction=system_message,
+                                max_output_tokens=self.max_tokens,
+                                temperature=self.temperature
+                                
+                                )
+            )
+            
+            response = content_response.model_dump()["candidates"][0]['content']['parts'][0]['text']
+            
+        except Exception as e:
+            logger.error(f"Error generating response: {e}")
+            return "I apologize, but I'm experiencing technical difficulties. Please try again later."
+        
         return response
         
         
         
         
-        """Generate response using HuggingFace OpenAI-compatible API."""
-        try:
-            # Build the system message with context and candidate instructions
-            system_message = self._build_system_message(context)
-            
+        """Generate response using HuggingFace OpenAI-compatible API.
+
             # Create chat completion
             completion = self.client.chat.completions.create(
                 model=self.model_name,
@@ -83,8 +99,6 @@ class LLMInterface:
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=self.max_tokens,
-                temperature=self.temperature
             )
             
             # Extract response
@@ -92,12 +106,25 @@ class LLMInterface:
             
             # Clean up the response
             return self._clean_response(response_text)
-            
-        except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            return "I apologize, but I'm experiencing technical difficulties. Please try again later."
+            """
+
     
-    def _build_system_message(self, context: Optional[str] = None) -> str:
+    def _build_system_message(self, context: Optional[str] = None) -> list:
+        system_message = [
+           "Be positive and enthusiastic about opportunities",
+           "Highlight relevant experience and achievements", 
+           "Be honest about your capabilities",
+           "Show interest in learning and growth",
+           "Maintain a professional tone",
+           "Keep responses concise but informative (2-3 sentences)",
+           "Speak in first person as the candidate"
+            ]
+        if context:
+            system_message.append(context)
+        return system_message
+
+
+    def _dep_build_system_message(self, context: Optional[str] = None) -> str:
         """Build the system message for the candidate chatbot."""
         system_message = """You are a professional job candidate responding to questions from recruiters and hiring managers. You should answer questions about your experience, skills, and qualifications in a confident, professional, and authentic way.
 
@@ -110,11 +137,9 @@ Key guidelines:
 - Keep responses concise but informative (2-3 sentences)
 - Speak in first person as the candidate
 
-"""
         
         if context:
-            system_message += f"""Your background and experience:
-{context}
+            system_message += fYour background and experience:{context}
 
 Use this information to answer questions about your qualifications and experience."""
         
