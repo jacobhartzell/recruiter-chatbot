@@ -10,3 +10,6 @@ pysqlite3-binary
 onnxruntime
 pandas
 numpy
+nb-clean
+ipykernel
+google-cloud-aiplatform

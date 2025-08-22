@@ -37,14 +37,14 @@ def get_system_prompt(rag_system):
 
 def process_batch_questions(questions_file, output_file=None):
     """Process questions from file and output results."""
-    
+
     print("=" * 50)
     print("🤖 RAG System Batch Tester")
     print("=" * 50)
-    
+
     # Delete existing vector store
     delete_vector_store()
-    
+
     # Initialize fresh RAG system
     print("\n🔧 Initializing fresh RAG system...")
     try:
@@ -56,7 +56,7 @@ def process_batch_questions(questions_file, output_file=None):
     except Exception as e:
         print(f"❌ Failed to initialize RAG: {e}")
         return
-    
+
     # Read questions
     try:
         with open(questions_file, 'r', encoding='utf-8') as f:
@@ -65,14 +65,14 @@ def process_batch_questions(questions_file, output_file=None):
     except Exception as e:
         print(f"❌ Error reading questions file: {e}")
         return
-    
+
     # Get system prompt
     system_prompt = get_system_prompt(rag)
-    
+
     # Prepare output
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_lines = []
-    
+
     # Header with metadata
     output_lines.append("=" * 80)
     output_lines.append(f"RAG SYSTEM TEST RESULTS")
@@ -82,7 +82,7 @@ def process_batch_questions(questions_file, output_file=None):
     output_lines.append(f"Model: {stats['model']}")
     output_lines.append("=" * 80)
     output_lines.append("")
-    
+
     # System prompt section
     output_lines.append("SYSTEM PROMPT:")
     output_lines.append("-" * 40)
@@ -90,16 +90,16 @@ def process_batch_questions(questions_file, output_file=None):
     output_lines.append("")
     output_lines.append("=" * 80)
     output_lines.append("")
-    
+
     # Process each question
     print(f"\n🔄 Processing {len(questions)} questions...")
-    
+
     for i, question in enumerate(questions, 1):
         print(f"   {i}/{len(questions)}: {question[:50]}{'...' if len(question) > 50 else ''}")
-        
+
         try:
             response = rag.query(question)
-            
+
             # Format Q&A pair
             output_lines.append(f"QUESTION {i}:")
             output_lines.append(f"Q: {question}")
@@ -109,7 +109,7 @@ def process_batch_questions(questions_file, output_file=None):
             output_lines.append("")
             output_lines.append("-" * 80)
             output_lines.append("")
-            
+
         except Exception as e:
             output_lines.append(f"QUESTION {i}:")
             output_lines.append(f"Q: {question}")
@@ -119,10 +119,10 @@ def process_batch_questions(questions_file, output_file=None):
             output_lines.append("")
             output_lines.append("-" * 80)
             output_lines.append("")
-    
+
     # Output results
     output_content = "\n".join(output_lines)
-    
+
     if output_file:
         try:
             with open(output_file, 'w', encoding='utf-8') as f:
@@ -137,7 +137,7 @@ def process_batch_questions(questions_file, output_file=None):
         base_name = os.path.splitext(questions_file)[0]
         timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = f"{base_name}_results_{timestamp_str}.txt"
-        
+
         try:
             with open(output_file, 'w', encoding='utf-8') as f:
                 f.write(output_content)
@@ -152,10 +152,10 @@ def interactive_mode():
     print("=" * 50)
     print("🤖 RAG System Interactive Tester")
     print("=" * 50)
-    
+
     # Delete existing vector store
     delete_vector_store()
-    
+
     # Initialize fresh RAG system
     print("\n🔧 Initializing fresh RAG system...")
     try:
@@ -167,27 +167,27 @@ def interactive_mode():
     except Exception as e:
         print(f"❌ Failed to initialize RAG: {e}")
         return
-    
+
     # Start Q&A session
     print("\n" + "=" * 50)
     print("💬 Ask questions! (type 'quit' to exit)")
     print("=" * 50)
-    
+
     while True:
         try:
             question = input("\n🔍 Question: ").strip()
-            
+
             if question.lower() in ['quit', 'exit', 'q']:
                 print("👋 Goodbye!")
                 break
-                
+
             if not question:
                 continue
-                
+
             print("🤔 Thinking...")
             response = rag.query(question)
             print(f"💡 Response: {response}")
-            
+
         except KeyboardInterrupt:
             print("\n👋 Goodbye!")
             break
@@ -200,20 +200,20 @@ def main():
         description="RAG System Tester - Interactive or Batch Mode",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    
+
     parser.add_argument(
         'questions_file', 
         nargs='?', 
         help='Text file with questions (one per line) for batch processing'
     )
-    
+
     parser.add_argument(
         '-o', '--output',
         help='Output file for batch results (auto-generated if not specified)'
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.questions_file:
         # Batch mode
         if not os.path.exists(args.questions_file):
