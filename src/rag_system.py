@@ -23,14 +23,16 @@ class RAGSystem:
     
     def __init__(self, documents_path: str = "data/documents", 
                  vector_db_path: str = "./chroma_db",
-                 collection_name: str = "career_docs"):
+                 collection_name: str = "career_docs",
+                 **kwargs):
         """Initialize RAG system with all components."""
         logger.info("Initializing RAG system...")
         
         # Initialize components
         self.document_processor = DocumentProcessor(chunk_size=500, chunk_overlap=50)
         self.vector_store = VectorStore(vector_db_path, collection_name)
-        self.llm_interface = LLMInterface()
+        llm_args = {k: v for k, v in kwargs.items() if k in ['model_name', 'max_tokens', 'temperature']}
+        self.llm_interface = LLMInterface(**llm_args)
         
         # Load and process documents
         self.documents_path = documents_path
