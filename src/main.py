@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 def main():
     """Initialize and run the RAG system."""
     logger.info("Initializing Recruiter Chatbot...")
-    
+
     # TODO: Implement initialization logic
     # 1. Load configuration
     # 2. Initialize document processor
     # 3. Set up vector store
     # 4. Initialize RAG system
-    
+
     logger.info("Chatbot initialized successfully!")
 
 if __name__ == "__main__":
