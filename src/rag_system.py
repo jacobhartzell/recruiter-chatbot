@@ -104,7 +104,7 @@ class RAGSystem:
                 logger.error(f"Fallback also failed: {fallback_error}")
                 return "I apologize, but I'm experiencing technical difficulties. Please try again."
 
-    def _format_context(self, chunks: List[Dict]) -> str:
+    def _format_context(self, chunks: List[Dict]) -> str | None:
         """Format retrieved chunks into context for the LLM."""
         if not chunks:
             return None

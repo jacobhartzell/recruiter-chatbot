@@ -8,10 +8,6 @@ from google.genai import types
 # Load environment variables from .env file
 load_dotenv()
 
-# Use the variables
-PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-LOCATION = os.getenv('GCP_LOCATION')
-
 logger = logging.getLogger(__name__)
 
 class LLMInterface:
@@ -39,10 +35,9 @@ class LLMInterface:
         # Load environment variables from .env file
         load_dotenv()
 
-        # Use the variables
-        PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-        LOCATION = os.getenv('GCP_LOCATION')
-
+        # Use the variables from the environment
+        PROJECT_ID = "recruiter-chatbot-jh"
+        LOCATION = "us-east4"
 
         # Initalize Vertex AI
 

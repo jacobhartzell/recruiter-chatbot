@@ -6,7 +6,6 @@ pyyaml
 langchain
 langchain-community
 chromadb
-pysqlite3-binary
 onnxruntime
 pandas
 numpy
