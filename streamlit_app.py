@@ -18,8 +18,12 @@ import time
 import os
 import threading
 
-# Set up loggingß
-logging.basicConfig(filename='/var/log/chatbot.log', level=logging.INFO)
+# Set up logging with fallback for cloud environments
+try:
+    logging.basicConfig(filename='/var/log/chatbot.log', level=logging.INFO)
+except (PermissionError, FileNotFoundError):
+    # Fallback to console logging for cloud environments
+    logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def load_config():
