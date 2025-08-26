@@ -13,3 +13,4 @@ numpy
 nb-clean
 ipykernel
 google-cloud-aiplatform
+google-genai

@@ -14,9 +14,6 @@ import streamlit as st
 from src.rag_system import RAGSystem
 import yaml
 import logging
-import time
-import os
-import threading
 
 # Set up logging with fallback for cloud environments
 try:
@@ -30,25 +27,6 @@ def load_config():
     """Load configuration from YAML file."""
     with open('configs/config.yaml', 'r') as file:
         return yaml.safe_load(file)
-
-def timeout_handler():
-    os._exit(0)
-
-# Update on every interaction
-st.session_state.last_interaction = time.time()
-
-if "timed_out" not in st.session_state:
-    st.session_state.timed_out = False
-
-@st.fragment(run_every=10)
-def idle_timeout():
-    # Timeout after 30 sec
-    if st.session_state.timed_out:
-        return
-    if time.time() - st.session_state.last_interaction > 30:
-        st.session_state.timed_out = True
-        st.title("Timeout. Refresh browser to continue.")
-        st.rerun()
 
 @st.cache_resource
 def initialize_rag_system():
@@ -70,13 +48,6 @@ def initialize_rag_system():
 
 def main():
     """Main Streamlit application."""
-    if st.session_state.get("timed_out"):
-        st.warning("Session timed out.")
-        logger.info("Exiting due to timeout")
-        timer = threading.Timer(10, timeout_handler)
-        timer.start()
-        st.stop()
-
     config = load_config()
 
     st.set_page_config(
@@ -128,5 +99,4 @@ def main():
         st.session_state.messages.append({"role": "assistant", "content": response})
 
 if __name__ == "__main__":
-    idle_timeout()
     main()

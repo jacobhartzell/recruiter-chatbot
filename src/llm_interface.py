@@ -1,5 +1,7 @@
 import os
 import logging
+import json
+import tempfile
 from typing import Optional
 from dotenv import load_dotenv
 from google import genai
@@ -35,21 +37,39 @@ class LLMInterface:
         # Load environment variables from .env file
         load_dotenv()
 
+        # Handle Streamlit Cloud credentials
+        self._setup_credentials()
+
         # Use the variables from the environment
         PROJECT_ID = os.getenv('GCP_PROJECT_ID')
         LOCATION = os.getenv('GCP_LOCATION')
 
-        # Initalize Vertex AI
-
-        # Only run this block for Vertex AI API
+        # Initialize Vertex AI
         self.client = genai.Client(
             vertexai=True, project=PROJECT_ID, location=LOCATION
         )
 
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
 
-
-
+    def _setup_credentials(self):
+        """Setup GCP credentials for Streamlit Cloud deployment."""
+        # Check if we're in Streamlit Cloud environment
+        if 'GOOGLE_CREDENTIALS_JSON' in os.environ:
+            try:
+                # Parse the JSON credentials
+                creds_json = json.loads(os.environ['GOOGLE_CREDENTIALS_JSON'])
+                
+                # Create temporary file for credentials
+                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+                    json.dump(creds_json, f)
+                    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = f.name
+                    
+                logger.info("GCP credentials configured from environment")
+            except Exception as e:
+                logger.error(f"Error setting up GCP credentials: {e}")
+                raise
+        elif not os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+            logger.warning("No GCP credentials found - local development mode")
 
     def generate_response(self, prompt: str, context: Optional[str] = None) -> str:
 
