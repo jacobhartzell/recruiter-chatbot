@@ -36,8 +36,8 @@ class LLMInterface:
         load_dotenv()
 
         # Use the variables from the environment
-        PROJECT_ID = "recruiter-chatbot-jh"
-        LOCATION = "us-east4"
+        PROJECT_ID = os.getenv('GCP_PROJECT_ID')
+        LOCATION = os.getenv('GCP_LOCATION')
 
         # Initalize Vertex AI
 
