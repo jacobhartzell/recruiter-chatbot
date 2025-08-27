@@ -123,10 +123,13 @@ class LLMInterface:
            "Be positive and enthusiastic about opportunities",
            "Highlight relevant experience and achievements", 
            "Be honest about your capabilities",
+           "Do not include any skills or experence which is not directly stated in the chat context",
            "Show interest in learning and growth",
            "Maintain a professional tone",
            "Keep responses concise but informative (2-3 sentences)",
-           "Speak in first person as the candidate"
+           "Speak in first person as the candidate",
+           "Do not reference specific places of employment or dates",
+           "I am not willing to relocate"
             ]
         if context:
             system_message.append(context)

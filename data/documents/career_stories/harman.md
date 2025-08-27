@@ -1,10 +1,4 @@
-
-**Harman International – Novi, MI**
-
-***Software Test Engineer (Automation)***
-- Identified opportunities and implemented software solutions and improvements to perform automated testing of infotainment head units where traditional test methods fail. Integrated external hardware devices with internal automated test framework.
-- Interface with team members, domain leads, and project leads to identify
-opportunities to use automation where traditional test methods fail.
-- Coach individuals in multiple departments with diverse technical backgrounds on the
-effective use of our automated test framework.
-- (Result) Dramatically reduced integration issues by (action) implementing a Jenkins CI server.
+Software Test Engineer (Automation)
+◦	Implemented a Jenkins CI (Continuous Integration) server resulting in significant reduction of downtime due to software build issues.
+◦	Designed architecture for updated test framework; Directed development with team of remote software engineers.
+◦	Expanded test software through integration of multiple peripherals: USB; Serial / RS-232; CAN.

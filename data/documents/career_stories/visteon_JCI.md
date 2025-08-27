@@ -1,12 +1,5 @@
-### **Visteon Corporation (Johnson Controls INC)  – Holland, MI**
-
-***Senior Software Engineer / Software Test Engineer***	      	       
-- Working on a newly developed infotainment system based on embedded Linux.
-- Performed customer facing activities in Europe. Supported our customer at their
-engineering facility, dealerships in Germany, and a press event in Spain.
-- Designed a CANoe configuration which allowed the simulation of diagnostic errors.
-- Assisted in the development of power moding features by using Python scripts to
-reproduce issues during overnight tests.
-- Supported development activities by fixing Coverity issues, performing defect analysis,
-and implementing software change requests.
-- Created CAN common scripts in TestStand for utilization by the team.
+Senior Software Engineer / Software Test Engineer	      	        
+◦	Selected as an international customer liaison after product launch to ensure that in field defects were appropriately addressed. Interfaced with internal development team to ensure that customer issues were addressed promptly and satisfactorily.
+◦	Identified opportunities for efficiency gains through code improvement and developed software frameworks which were utilized by the department in subsequent product validation.
+◦	Collaborated with development team and supported critical defect reproduction utilizing a Python test framework, mitigating a vehicle recall.
+◦	Processed requirements documents with Python to significantly reduce time for feature implementation.
