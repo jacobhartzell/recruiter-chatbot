@@ -110,7 +110,8 @@ class GCPLogger:
                 self.logger.info("GCP Cloud Logging initialized successfully (dual logging mode)")
                 
             except Exception as e:
-                self.logger.warning(f"Failed to initialize GCP logging: {e}")
+                # SECURITY: Never log the full exception as it may contain credentials
+                self.logger.warning("Failed to initialize GCP logging: Authentication or connection error")
                 self.logger.info("Continuing with local logging only")
     
     def _should_use_gcp_logging(self) -> bool:
@@ -148,7 +149,8 @@ class GCPLogger:
                 service_account_info = json.loads(gcp_json)
                 return service_account.Credentials.from_service_account_info(service_account_info)
             except (json.JSONDecodeError, ValueError) as e:
-                self.logger.warning(f"Invalid GCP JSON credentials: {e}")
+                # SECURITY: Don't log the actual JSON content or detailed error
+                self.logger.warning("Invalid GCP JSON credentials format")
         
         # Try Streamlit secrets only if we're in a Streamlit context
         try:
