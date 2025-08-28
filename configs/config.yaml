@@ -24,3 +24,16 @@ streamlit:
 rag:
   top_k: 3
   similarity_threshold: 0.7
+
+# Rate limiting settings
+rate_limiting:
+  max_requests_per_minute: 10
+  max_requests_per_hour: 60
+
+# Logging settings
+logging:
+  use_gcp_logging: true  # Set to true for GCP Cloud Logging (enables dual logging)
+  log_level: "INFO"       # DEBUG, INFO, WARNING, ERROR
+  log_file: "./logs/chatbot.log"  # Local log file path (always used)
+  environment: "development"      # development, staging, production
+  service_name: "recruiter-chatbot-jh"

@@ -1,9 +1,11 @@
 # app/Dockerfile
 
-FROM python:3.13-slim
+FROM python:3.11
 
 
 RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    python3-dev \
     build-essential \
     curl \
     git \

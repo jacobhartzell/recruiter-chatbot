@@ -14,3 +14,4 @@ nb-clean
 ipykernel
 google-cloud-aiplatform
 google-genai
+google-cloud-logging

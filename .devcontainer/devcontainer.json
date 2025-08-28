@@ -1,10 +1,10 @@
 {
   "name": "Python 3",
 "mounts": [
-    "source=${env:HOME}/01_Projects/chatbot/key.json,target=/workspace/key.json,type=bind,consistency=cached"
+    "source=${env:HOME}/01_Projects/chatbot/logging-key.json,target=/workspace/logging-key.json,type=bind,consistency=cached"
   ],
   "containerEnv": {
-    "GOOGLE_APPLICATION_CREDENTIALS": "/workspace/key.json",
+    "GOOGLE_APPLICATION_CREDENTIALS": "/workspace/logging-key.json",
     "GCP_PROJECT_ID": "recruiter-chatbot-jh",
     "GCP_LOCATION": "us-east4"
   },
@@ -25,14 +25,15 @@
       "settings": {},
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "DavidAnson.vscode-markdownlint"
       ]
     }
   },
-  "updateContentCommand": "uv pip install --system -r requirements.txt",
+  "updateContentCommand": "pip install --upgrade pip setuptools wheel && uv pip install --system -r requirements.txt",
   // "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade -y && sudo xargs apt install -y <packages.txt; [ -f requirements.txt ] && pip3 install --user -r requirements.txt; pip3 install --user streamlit; echo '✅ Packages installed and Requirements met'",
   "postAttachCommand": {
-    "server": "streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false"
+    "server": "streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false"
   },
   "portsAttributes": {
     "8501": {
