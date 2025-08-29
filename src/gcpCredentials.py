@@ -90,8 +90,13 @@ class GCPCredentials:
     def _get_streamlit_credentials(self):
         if self.streamlit_credentials_available() and self.gcp_logging_available:
             from google.oauth2 import service_account
+            # Add required scopes for Vertex AI
+            scopes = [
+                'https://www.googleapis.com/auth/cloud-platform',
+                'https://www.googleapis.com/auth/logging.write'
+            ]
             return service_account.Credentials.from_service_account_info(
-                    st.secrets["gcp_service_account"]
+                    st.secrets["gcp_service_account"], scopes=scopes
                 )
         else:
             return None 
