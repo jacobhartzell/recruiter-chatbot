@@ -119,8 +119,19 @@ def main():
     )
 
 
-    st.title("🤖 Career Chatbot")
-    st.write("Hi! I'm an AI representing a job candidate. Ask me anything about my professional experience and qualifications!")
+    # Sidebar with personal links
+    st.sidebar.title("🔗 Jacob's Links")
+    st.sidebar.markdown("""
+    Connect with Jacob:
+    
+    [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/jacobhartzell)
+    
+    [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jacobhartzell)
+    """, unsafe_allow_html=True)
+
+    st.title("Jacob's Personall Career Assistant")
+    st.write("Hi! I'm an AI assisting Jacob in his job search.")
+    st.write("Ask me anything about his professional experience and qualifications!")
 
     # Initialize RAG system
     rag_system = initialize_rag_system()
@@ -133,8 +144,12 @@ def main():
 
     # Display chat messages
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        if message["role"] == "assistant":
+            with st.chat_message(message["role"], avatar="data/resources/robot-me-small.png"):
+                st.markdown(message["content"])
+        else:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
     # Chat input
     if prompt := st.chat_input("What would you like to know about my experience?"):
@@ -152,7 +167,7 @@ def main():
             st.markdown(prompt)
 
         # Generate assistant response
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="data/resources/robot-me-small.png"):
             with st.spinner("Searching my experience and thinking..."):
                 try:
                     # Generate response using RAG system
