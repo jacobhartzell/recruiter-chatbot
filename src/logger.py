@@ -156,7 +156,7 @@ class GCPLogger:
         try:
             import streamlit as st
             # Only try to access secrets if Streamlit is properly initialized
-            if hasattr(st, 'secrets') and hasattr(st.secrets, '_file_paths'):
+            if hasattr(st, 'secrets'):
                 if 'gcp_service_account' in st.secrets:
                     return service_account.Credentials.from_service_account_info(
                         st.secrets["gcp_service_account"]
