@@ -47,11 +47,12 @@ class LLMInterface:
         credentials = gcp_creds.get_gcp_credentials()
         
         if credentials:
+            logger.info("Using custom GCP credentials for Vertex AI")
             self.client = genai.Client(
                 vertexai=True, project=PROJECT_ID, location=LOCATION, credentials=credentials
             )
         else:
-            # Fallback to default credentials (will fail on Streamlit Cloud)
+            logger.warning("No custom GCP credentials found, using default authentication")
             self.client = genai.Client(
                 vertexai=True, project=PROJECT_ID, location=LOCATION
             )
