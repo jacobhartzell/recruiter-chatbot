@@ -23,12 +23,11 @@ class GCPCredentials:
         try:
             # Only try to access secrets if Streamlit is properly initialized
             if hasattr(st, 'secrets') and ('gcp_service_account' in st.secrets):
+                self.logger.info("Streamlit GCP credentials found")
                 return True
         except (ImportError, AttributeError, FileNotFoundError):
             # Streamlit not available or secrets not configured - this is fine
             self.logger.info("Streamlit not available or GCP credentials not found in secrets")
-        finally:
-            return False
     
     # This method should check to see if the credentials are available in the environment
     def gcp_credentials_available(self) -> bool:
