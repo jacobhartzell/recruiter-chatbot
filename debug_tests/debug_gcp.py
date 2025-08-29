@@ -133,7 +133,7 @@ def test_our_logger_step_by_step():
         print(f"   Config use_gcp_logging: {logger.config['logging']['use_gcp_logging']}")
         
         # Check what _should_use_gcp_logging returns
-        should_use = logger._should_use_gcp_logging()
+        should_use = logger._check_gcp_credentials_available()
         print(f"   _should_use_gcp_logging(): {should_use}")
         
         # Check credentials

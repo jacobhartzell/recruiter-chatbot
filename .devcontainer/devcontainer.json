@@ -26,11 +26,15 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "DavidAnson.vscode-markdownlint"
+        "DavidAnson.vscode-markdownlint",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "vscodevim.vim"
       ]
     }
   },
-  "updateContentCommand": "pip install --upgrade pip setuptools wheel && uv pip install --system -r requirements.txt",
+  "onCreateCommand": "grep -v sqlite requirements.txt > requirements-dev.txt", //sqlite needed for streamlit.app, but not in dev.
+  "updateContentCommand": "pip install --upgrade pip setuptools wheel && uv pip install --system -r requirements-dev.txt",
   // "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade -y && sudo xargs apt install -y <packages.txt; [ -f requirements.txt ] && pip3 install --user -r requirements.txt; pip3 install --user streamlit; echo '✅ Packages installed and Requirements met'",
   "postAttachCommand": {
     "server": "streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false"

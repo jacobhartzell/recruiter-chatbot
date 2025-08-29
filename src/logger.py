@@ -8,13 +8,11 @@ import os
 import yaml
 from datetime import datetime
 from typing import Dict, Any, Optional
+from google.cloud import logging as cloud_logging
+from google.oauth2 import service_account
+from src.gcpCredentials import GCPCredentials
 
-try:
-    from google.cloud import logging as cloud_logging
-    from google.oauth2 import service_account
-    GCP_LOGGING_AVAILABLE = True
-except ImportError:
-    GCP_LOGGING_AVAILABLE = False
+
 
 
 class GCPLogger:
@@ -33,7 +31,8 @@ class GCPLogger:
         self.logger = logging.getLogger(self.service_name)
         self.cloud_client = None
         self.cloud_handler = None
-        
+        self.gcp_credentials = GCPCredentials()
+
         # Setup logging based on configuration
         self._setup_logging()
         
@@ -75,16 +74,16 @@ class GCPLogger:
         
         # Add GCP logging if enabled  
         if use_gcp:
-            if not GCP_LOGGING_AVAILABLE:
+            if not self.gcp_credentials.gcp_logging_available:
                 self.logger.error("GCP logging requested but google-cloud-logging not available")
                 return
             
-            if not self._should_use_gcp_logging():
+            if not self.gcp_credentials.gcp_credentials_available():
                 self.logger.warning("GCP logging enabled in config but no credentials found")
                 return
             try:
                 # Initialize client with credentials if available
-                credentials = self._get_gcp_credentials()
+                credentials = self.gcp_credentials.get_gcp_credentials()
                 if credentials:
                     self.cloud_client = cloud_logging.Client(credentials=credentials)
                 else:
@@ -113,69 +112,8 @@ class GCPLogger:
                 # SECURITY: Never log the full exception as it may contain credentials
                 self.logger.warning("Failed to initialize GCP logging: Authentication or connection error")
                 self.logger.info("Continuing with local logging only")
-    
-    def _should_use_gcp_logging(self) -> bool:
-        """Determine if GCP logging should be used."""
-        # Use GCP logging if:
-        # 1. Running in GCP environment (detected by metadata server)
-        # 2. Or explicitly enabled via environment variable
-        # 3. Or credentials are available
-        
-        if os.getenv('USE_GCP_LOGGING', '').lower() == 'true':
-            return True
-        
-        if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
-            return True
-        
-        try:
-            import streamlit as st
-            # Only try to access secrets if Streamlit is properly initialized
-            if hasattr(st, 'secrets') and ('gcp_service_account' in st.secrets):
-                return True
-        except (ImportError, AttributeError, FileNotFoundError):
-            # Streamlit not available or secrets not configured - this is fine
-            pass
 
-        # Check if running in GCP by trying to access metadata
-        try:
-            import requests
-            response = requests.get(
-                'http://metadata.google.internal/computeMetadata/v1/project/project-id',
-                headers={'Metadata-Flavor': 'Google'},
-                timeout=1
-            )
-            return response.status_code == 200
-        except:
-            return False
-    
-    def _get_gcp_credentials(self):
-        """Get GCP credentials from various sources."""
-        # Try environment variable with JSON content first
-        gcp_json = os.getenv('GCP_SERVICE_ACCOUNT_JSON')
-        if gcp_json:
-            try:
-                import json
-                service_account_info = json.loads(gcp_json)
-                return service_account.Credentials.from_service_account_info(service_account_info)
-            except (json.JSONDecodeError, ValueError) as e:
-                # SECURITY: Don't log the actual JSON content or detailed error
-                self.logger.warning("Invalid GCP JSON credentials format")
-        
-        # Try Streamlit secrets only if we're in a Streamlit context
-        try:
-            import streamlit as st
-            # Only try to access secrets if Streamlit is properly initialized
-            if hasattr(st, 'secrets'):
-                if 'gcp_service_account' in st.secrets:
-                    return service_account.Credentials.from_service_account_info(
-                        st.secrets["gcp_service_account"]
-                    )
-        except (ImportError, AttributeError, FileNotFoundError):
-            # Streamlit not available or secrets not configured - this is fine
-            pass
-        
-        # Fall back to default credentials (GOOGLE_APPLICATION_CREDENTIALS file)
-        return None
+
     
     def _add_structured_fields(self, record):
         """Add structured fields to log records for GCP."""

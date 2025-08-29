@@ -37,9 +37,6 @@ class LLMInterface:
         # Load environment variables from .env file
         load_dotenv()
 
-        # Handle Streamlit Cloud credentials
-        self._setup_credentials()
-
         # Use the variables from the environment
         PROJECT_ID = os.getenv('GCP_PROJECT_ID')
         LOCATION = os.getenv('GCP_LOCATION')
@@ -50,26 +47,6 @@ class LLMInterface:
         )
 
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
-
-    def _setup_credentials(self):
-        """Setup GCP credentials for Streamlit Cloud deployment."""
-        # Check if we're in Streamlit Cloud environment
-        if 'GOOGLE_CREDENTIALS_JSON' in os.environ:
-            try:
-                # Parse the JSON credentials
-                creds_json = json.loads(os.environ['GOOGLE_CREDENTIALS_JSON'])
-                
-                # Create temporary file for credentials
-                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
-                    json.dump(creds_json, f)
-                    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = f.name
-                    
-                logger.info("GCP credentials configured from environment")
-            except Exception as e:
-                logger.error(f"Error setting up GCP credentials: {e}")
-                raise
-        elif not os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
-            logger.warning("No GCP credentials found - local development mode")
 
     def generate_response(self, prompt: str, context: Optional[str] = None) -> str:
 
@@ -96,28 +73,6 @@ class LLMInterface:
 
         return response
 
-
-
-
-        """Generate response using HuggingFace OpenAI-compatible API.
-
-            # Create chat completion
-            completion = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt}
-                ],
-            )
-
-            # Extract response
-            response_text = completion.choices[0].message.content.strip()
-
-            # Clean up the response
-            return self._clean_response(response_text)
-            """
-
-
     def _build_system_message(self, context: Optional[str] = None) -> list:
         system_message = [
            "Be positive and enthusiastic about opportunities",
@@ -135,27 +90,6 @@ class LLMInterface:
             system_message.append(context)
         return system_message
 
-
-    def _dep_build_system_message(self, context: Optional[str] = None) -> str:
-        """Build the system message for the candidate chatbot."""
-        system_message = """You are a professional job candidate responding to questions from recruiters and hiring managers. You should answer questions about your experience, skills, and qualifications in a confident, professional, and authentic way.
-
-Key guidelines:
-- Be positive and enthusiastic about opportunities
-- Highlight relevant experience and achievements
-- Be honest about your capabilities
-- Show interest in learning and growth
-- Maintain a professional tone
-- Keep responses concise but informative (2-3 sentences)
-- Speak in first person as the candidate
-
-
-        if context:
-            system_message += fYour background and experience:{context}
-
-Use this information to answer questions about your qualifications and experience."""
-
-        return system_message
 
     def _clean_response(self, response: str) -> str:
         """Clean and format the response."""
