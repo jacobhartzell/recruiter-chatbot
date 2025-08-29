@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+tests/
+test_*.py
+*_test.py
+pytest.ini
+run_tests.py
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development
+eda/
+.git/
+.gitignore
+README.md
+PROJECT_STATUS.md
+CLAUDE.local.md
+
+# Editor files
+*~
+.#*
+#*#
+.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log

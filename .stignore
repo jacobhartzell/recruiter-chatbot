@@ -9,3 +9,5 @@ debug_*.py
 .pytest_cache/
 *.log
 .DS_Store
+# Don't ignore static directory - we need CSS files
+!static/

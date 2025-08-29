@@ -79,12 +79,12 @@ def initialize_rag_system():
     try:
         rag_system = RAGSystem(model_name=model_name)
         
-        # Show initialization stats
+        # Check for initialization errors
         stats = rag_system.get_stats()
-        if "error" not in stats:
-            st.success(f"✅ Loaded {stats['documents_loaded']} document chunks")
-            
-            # Log successful initialization
+        if "error" in stats:
+            st.error(f"❌ Error initializing chatbot: {stats.get('error', 'Unknown error')}")
+        else:
+            # Log successful initialization (but don't display to user)
             logger.log_system_event(
                 event_type="rag_system_initialization",
                 message="RAG system initialized successfully",
@@ -129,79 +129,108 @@ def main():
     [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jacobhartzell)
     """, unsafe_allow_html=True)
 
-    st.title("Jacob's Personall Career Assistant")
-    st.write("Hi! I'm an AI assisting Jacob in his job search.")
-    st.write("Ask me anything about his professional experience and qualifications!")
+    # Load external CSS file
+    def load_css(file_name):
+        with open(file_name) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+    load_css('static/styles.css')
 
-    # Initialize RAG system
-    rag_system = initialize_rag_system()
-    if rag_system is None:
-        st.stop()  # Stop execution if RAG system failed to initialize
-
-    # Chat interface
-    if 'messages' not in st.session_state:
-        st.session_state.messages = []
-
-    # Display chat messages
-    for message in st.session_state.messages:
-        if message["role"] == "assistant":
-            with st.chat_message(message["role"], avatar="data/resources/robot-me-small.png"):
-                st.markdown(message["content"])
-        else:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
-    # Chat input
-    if prompt := st.chat_input("What would you like to know about my experience?"):
-        # Check rate limit before processing
-        is_allowed, error_message = check_rate_limit(config)
+    # Main content container
+    main_container = st.container()
+    
+    with main_container:
+        st.title("Jacob's Personall Career Assistant")
         
-        if not is_allowed:
-            st.error(error_message)
-            st.info("Please wait a moment before submitting another question.")
-            return
+        # Introductory message
+        st.info("""
+        👋 Hi, I'm Jacob's personal chatbot assistant. I'm here to answer questions about his skills and experiences. 
         
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        You can ask things like:
+        - "Tell me about your C++ skills"
+        - "What's your experience with Python?"
+        - "What projects have you worked on?"
+        """)
 
-        # Generate assistant response
-        with st.chat_message("assistant", avatar="data/resources/robot-me-small.png"):
-            with st.spinner("Searching my experience and thinking..."):
-                try:
-                    # Generate response using RAG system
-                    response = rag_system.query(prompt)
-                    st.markdown(response)
-                    
-                    # Log chat interaction with structured data
-                    logger.log_chat_interaction(
-                        user_input=prompt,
-                        bot_response=response,
-                        metadata={
-                            "session_id": id(st.session_state),
-                            "response_time": datetime.now().isoformat(),
-                            "rag_system_model": model_name
-                        }
-                    )
-                except Exception as e:
-                    logger.error(f"Error generating response: {e}")
-                    response = "I apologize, but I'm experiencing technical difficulties. Please try again."
-                    st.markdown(response)
-                    
-                    # Log error event
-                    logger.log_system_event(
-                        event_type="response_generation_error",
-                        message=f"Failed to generate response: {str(e)}",
-                        level="ERROR",
-                        metadata={
-                            "session_id": id(st.session_state),
-                            "user_input": prompt
-                        }
-                    )
+        # Initialize RAG system
+        rag_system = initialize_rag_system()
+        if rag_system is None:
+            st.stop()  # Stop execution if RAG system failed to initialize
 
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Chat interface
+        if 'messages' not in st.session_state:
+            st.session_state.messages = []
+
+        # Display chat messages
+        for message in st.session_state.messages:
+            if message["role"] == "assistant":
+                with st.chat_message(message["role"], avatar="data/resources/robot-me-small.png"):
+                    st.markdown(message["content"])
+            else:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+
+        # Chat input
+        if prompt := st.chat_input("What would you like to know about my experience?"):
+            # Check rate limit before processing
+            is_allowed, error_message = check_rate_limit(config)
+            
+            if not is_allowed:
+                st.error(error_message)
+                st.info("Please wait a moment before submitting another question.")
+                return
+            
+            # Add user message to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Generate assistant response
+            with st.chat_message("assistant", avatar="data/resources/robot-me-small.png"):
+                with st.spinner("Searching my experience and thinking..."):
+                    try:
+                        # Generate response using RAG system
+                        response = rag_system.query(prompt)
+                        st.markdown(response)
+                        
+                        # Log chat interaction with structured data
+                        logger.log_chat_interaction(
+                            user_input=prompt,
+                            bot_response=response,
+                            metadata={
+                                "session_id": id(st.session_state),
+                                "response_time": datetime.now().isoformat(),
+                                "rag_system_model": model_name
+                            }
+                        )
+                    except Exception as e:
+                        logger.error(f"Error generating response: {e}")
+                        response = "I apologize, but I'm experiencing technical difficulties. Please try again."
+                        st.markdown(response)
+                        
+                        # Log error event
+                        logger.log_system_event(
+                            event_type="response_generation_error",
+                            message=f"Failed to generate response: {str(e)}",
+                            level="ERROR",
+                            metadata={
+                                "session_id": id(st.session_state),
+                                "user_input": prompt
+                            }
+                        )
+
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+    # Footer container - fixed to bottom
+    st.markdown(
+        """
+        <div class='footer-container'>
+        ⚠️ Chat messages will be logged. This chatbot may hallucinate or provide inaccurate information.
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     try:
