@@ -27,6 +27,8 @@ class GCPCredentials:
         except (ImportError, AttributeError, FileNotFoundError):
             # Streamlit not available or secrets not configured - this is fine
             self.logger.info("Streamlit not available or GCP credentials not found in secrets")
+        
+        return False
     
     # This method should check to see if the credentials are available in the environment
     def gcp_credentials_available(self) -> bool:
@@ -80,6 +82,7 @@ class GCPCredentials:
     
     def _get_streamlit_credentials(self):
         if self.streamlit_credentials_available() and self.gcp_logging_available:
+            from google.oauth2 import service_account
             return service_account.Credentials.from_service_account_info(
                     st.secrets["gcp_service_account"]
                 )
