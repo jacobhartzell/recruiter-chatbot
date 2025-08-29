@@ -73,30 +73,31 @@ def check_rate_limit(config):
 
 @st.cache_resource
 def initialize_rag_system():
-    """Initialize the RAG system."""
+    """Initialize the RAG system - no UI elements in cached function."""
     model_name = 'gemini-2.0-flash-001'
     
     try:
         rag_system = RAGSystem(model_name=model_name)
         
-        # Check for initialization errors
+        # Check for initialization errors but don't display UI
         stats = rag_system.get_stats()
         if "error" in stats:
-            st.error(f"❌ Error initializing chatbot: {stats.get('error', 'Unknown error')}")
-        else:
-            # Log successful initialization (but don't display to user)
-            logger.log_system_event(
-                event_type="rag_system_initialization",
-                message="RAG system initialized successfully",
-                level="INFO",
-                metadata={
-                    "model_name": model_name,
-                    "documents_loaded": stats.get('documents_loaded', 0),
-                    "stats": stats
-                }
-            )
+            return None
+        
+        # Log successful initialization (no UI elements)
+        logger.log_system_event(
+            event_type="rag_system_initialization",
+            message="RAG system initialized successfully",
+            level="INFO",
+            metadata={
+                "model_name": model_name,
+                "documents_loaded": stats.get('documents_loaded', 0),
+                "stats": stats
+            }
+        )
         
         return rag_system
+        
     except Exception as e:
         logger.log_system_event(
             event_type="rag_system_initialization_error",
@@ -104,7 +105,6 @@ def initialize_rag_system():
             level="ERROR",
             metadata={"model_name": model_name}
         )
-        st.error(f"Failed to initialize chatbot: {e}")
         return None
 
 def main():
@@ -152,8 +152,12 @@ def main():
         - "What projects have you worked on?"
         """)
 
-        # Initialize RAG system
-        rag_system = initialize_rag_system()
+        # Initialize RAG system with progress indicator
+        if 'rag_system' not in st.session_state:
+            with st.spinner("Loading knowledge base..."):
+                st.session_state.rag_system = initialize_rag_system()
+        
+        rag_system = st.session_state.rag_system
         if rag_system is None:
             st.stop()  # Stop execution if RAG system failed to initialize
 
