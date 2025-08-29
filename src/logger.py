@@ -127,6 +127,15 @@ class GCPLogger:
         if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
             return True
         
+        try:
+            import streamlit as st
+            # Only try to access secrets if Streamlit is properly initialized
+            if hasattr(st, 'secrets') and ('gcp_service_account' in st.secrets):
+                return True
+        except (ImportError, AttributeError, FileNotFoundError):
+            # Streamlit not available or secrets not configured - this is fine
+            pass
+
         # Check if running in GCP by trying to access metadata
         try:
             import requests
