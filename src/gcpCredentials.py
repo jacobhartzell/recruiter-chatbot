@@ -45,6 +45,9 @@ class GCPCredentials:
         if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
             return True
 
+        if self.streamlit_credentials_available():
+            return True
+
         # Check if running in GCP by trying to access metadata
         try:
             import requests
