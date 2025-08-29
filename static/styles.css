@@ -1,8 +1,18 @@
-/* Main container styling */
+/* Main container styling - ensure space for chat input and footer */
 .main-container {
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 140px);
     display: flex;
     flex-direction: column;
+    padding-bottom: 80px; /* Space for chat input */
+}
+
+/* Ensure chat input stays in correct position */
+.stChatInput {
+    position: fixed !important;
+    bottom: 40px !important; /* Above the footer */
+    left: 21rem !important;
+    right: 1rem !important;
+    z-index: 999 !important;
 }
 
 /* Footer container styling */
@@ -18,6 +28,13 @@
     font-size: 12px;
     color: #666;
     padding: 10px;
+}
+
+/* Mobile adjustments for chat input */
+@media (max-width: 768px) {
+    .stChatInput {
+        left: 1rem !important;
+    }
 }
 
 /* Mobile responsive - full width on small screens */
