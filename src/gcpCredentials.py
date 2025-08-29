@@ -23,7 +23,6 @@ class GCPCredentials:
         try:
             # Only try to access secrets if Streamlit is properly initialized
             if hasattr(st, 'secrets') and ('gcp_service_account' in st.secrets):
-                self.logger.info("Streamlit GCP credentials found")
                 return True
         except (ImportError, AttributeError, FileNotFoundError):
             # Streamlit not available or secrets not configured - this is fine
@@ -42,13 +41,16 @@ class GCPCredentials:
             return False
         
         if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
+            self.logger.info("GCP credentials found in environment variable")
             return True
 
         if self.streamlit_credentials_available():
+            self.logger.info("Streamlit GCP credentials found")
             return True
 
         # Check if running in GCP by trying to access metadata
         try:
+            self.logger.info("Checking GCP metadata")
             import requests
             response = requests.get(
                 'http://metadata.google.internal/computeMetadata/v1/project/project-id',
