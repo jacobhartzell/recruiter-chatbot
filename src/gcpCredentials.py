@@ -61,7 +61,10 @@ class GCPCredentials:
 
     def get_gcp_credentials(self):
         """Get GCP credentials from various sources."""
-        # Try environment variable with JSON content first
+        # Try environment variable with streamlit content first
+        if self.streamlit_credentials_available():
+            return self._get_streamlit_credentials()
+
         gcp_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         if gcp_json:
             try:
@@ -70,8 +73,6 @@ class GCPCredentials:
             except (json.JSONDecodeError, ValueError) as e:
                 # SECURITY: Don't log the actual JSON content or detailed error
                 self.logger.warning("Invalid GCP JSON credentials format")
-        if self.streamlit_credentials_available():
-            return self._get_streamlit_credentials()
 
         return None
     
