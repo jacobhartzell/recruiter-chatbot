@@ -6,6 +6,7 @@ from typing import Optional
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from src.gcpCredentials import GCPCredentials
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,10 +42,19 @@ class LLMInterface:
         PROJECT_ID = os.getenv('GCP_PROJECT_ID')
         LOCATION = os.getenv('GCP_LOCATION')
 
-        # Initialize Vertex AI
-        self.client = genai.Client(
-            vertexai=True, project=PROJECT_ID, location=LOCATION
-        )
+        # Initialize Vertex AI with credentials
+        gcp_creds = GCPCredentials()
+        credentials = gcp_creds.get_gcp_credentials()
+        
+        if credentials:
+            self.client = genai.Client(
+                vertexai=True, project=PROJECT_ID, location=LOCATION, credentials=credentials
+            )
+        else:
+            # Fallback to default credentials (will fail on Streamlit Cloud)
+            self.client = genai.Client(
+                vertexai=True, project=PROJECT_ID, location=LOCATION
+            )
 
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
 
