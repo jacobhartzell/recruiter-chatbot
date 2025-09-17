@@ -1,34 +1,63 @@
 """
 Main entry point for the Recruiter Chatbot application.
+
+This module provides a simple CLI interface for the RAG system.
+For the web interface, use streamlit_app.py instead.
 """
 
-# SQLite compatibility fix for Streamlit Cloud
+import logging
 import sys
-try:
-    __import__('pysqlite3')
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except ImportError:
-    pass
+from pathlib import Path
+
+from src.utils import fix_sqlite_compatibility
+
+# Apply SQLite compatibility fix
+fix_sqlite_compatibility()
 
 from src.rag_system import RAGSystem
-from src.document_processor import DocumentProcessor
-from src.vector_store import VectorStore
-import logging
+from src.logger import get_logger
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Initialize logger
+logger = get_logger()
 
 def main():
     """Initialize and run the RAG system."""
     logger.info("Initializing Recruiter Chatbot...")
 
-    # TODO: Implement initialization logic
-    # 1. Load configuration
-    # 2. Initialize document processor
-    # 3. Set up vector store
-    # 4. Initialize RAG system
-
-    logger.info("Chatbot initialized successfully!")
+    try:
+        # Initialize RAG system with default settings
+        rag_system = RAGSystem()
+        
+        # Get system stats
+        stats = rag_system.get_stats()
+        logger.info(f"RAG system initialized successfully: {stats}")
+        
+        # Simple interactive loop
+        print("\n🤖 Recruiter Chatbot CLI")
+        print("Type 'quit' to exit\n")
+        
+        while True:
+            try:
+                question = input("Ask about Jacob's experience: ").strip()
+                if question.lower() in ['quit', 'exit', 'q']:
+                    break
+                if not question:
+                    continue
+                    
+                response = rag_system.query(question)
+                print(f"\nBot: {response}\n")
+                
+            except KeyboardInterrupt:
+                print("\n\nGoodbye!")
+                break
+            except Exception as e:
+                logger.error(f"Error processing query: {e}")
+                print(f"Error: {e}\n")
+                
+    except Exception as e:
+        logger.error(f"Failed to initialize RAG system: {e}")
+        print(f"Failed to initialize chatbot: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

@@ -35,9 +35,6 @@ class LLMInterface:
         #    api_key=self.api_token
         # )
 
-        # Load environment variables from .env file
-        load_dotenv()
-
         # Use the variables from the environment
         PROJECT_ID = os.getenv('GCP_PROJECT_ID')
         LOCATION = os.getenv('GCP_LOCATION')
@@ -60,7 +57,6 @@ class LLMInterface:
         logger.info(f"Initialized LLM interface with model: {self.model_name}")
 
     def generate_response(self, prompt: str, context: Optional[str] = None) -> str:
-
         try:
             # Build the system message with context and candidate instructions
             system_message = self._build_system_message(context)
@@ -72,17 +68,17 @@ class LLMInterface:
                                 system_instruction=system_message,
                                 max_output_tokens=self.max_tokens,
                                 temperature=self.temperature
-
                                 )
             )
 
             response = content_response.model_dump()["candidates"][0]['content']['parts'][0]['text']
+            
+            # Clean and format the response
+            return self._clean_response(response)
 
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             return "I apologize, but I'm experiencing technical difficulties. Please try again later."
-
-        return response
 
     def _build_system_message(self, context: Optional[str] = None) -> list:
         system_message = [

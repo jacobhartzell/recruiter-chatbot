@@ -2,13 +2,10 @@
 Streamlit web application for the recruiter chatbot.
 """
 
-# SQLite compatibility fix for Streamlit Cloud
-import sys
-try:
-    __import__('pysqlite3')
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except ImportError:
-    pass
+from src.utils import fix_sqlite_compatibility
+
+# Apply SQLite compatibility fix
+fix_sqlite_compatibility()
 
 import streamlit as st
 from src.rag_system import RAGSystem
@@ -74,7 +71,8 @@ def check_rate_limit(config):
 @st.cache_resource
 def initialize_rag_system():
     """Initialize the RAG system - no UI elements in cached function."""
-    model_name = 'gemini-2.0-flash-001'
+    config = load_config()
+    model_name = config.get('model', {}).get('llm_model', 'gemini-2.0-flash-001')
     
     try:
         rag_system = RAGSystem(model_name=model_name)
@@ -110,7 +108,7 @@ def initialize_rag_system():
 def main():
     """Main Streamlit application."""
     config = load_config()
-    model_name = 'gemini-2.0-flash-001'  # TODO: Move to config
+    model_name = config.get('model', {}).get('llm_model', 'gemini-2.0-flash-001')
 
     st.set_page_config(
         page_title=config['streamlit']['page_title'],
@@ -140,7 +138,7 @@ def main():
     main_container = st.container()
     
     with main_container:
-        st.title("Jacob's Personall Career Assistant")
+        st.title("Jacob's Personal Career Assistant")
         
         # Introductory message
         st.info("""

@@ -9,11 +9,13 @@ import streamlit as st
 
 class GCPCredentials:
     def __init__(self):
+        # Ensure a module logger is always available
+        self.logger = logging.getLogger(__name__)
+
         try:
             from google.cloud import logging as cloud_logging
             from google.oauth2 import service_account
             self.gcp_logging_available = True
-            self.logger =logging.getLogger(__name__)
         except ImportError:
             self.gcp_logging_available = False
 
@@ -28,6 +30,7 @@ class GCPCredentials:
                     return True
         except (ImportError, AttributeError, FileNotFoundError) as e:
             # Streamlit not available or secrets not configured - this is fine
+            pass
         
         return False
     
@@ -73,6 +76,8 @@ class GCPCredentials:
         gcp_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         if gcp_json:
             try:
+                # Import locally to avoid hard dependency at module import time
+                from google.oauth2 import service_account
                 service_account_info = json.loads(gcp_json)
                 return service_account.Credentials.from_service_account_info(service_account_info)
             except (json.JSONDecodeError, ValueError) as e:

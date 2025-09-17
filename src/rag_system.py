@@ -3,7 +3,7 @@ RAG (Retrieval-Augmented Generation) system for the recruiter chatbot.
 """
 
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 try:
     # Try relative imports first (for package usage)
@@ -104,7 +104,7 @@ class RAGSystem:
                 logger.error(f"Fallback also failed: {fallback_error}")
                 return "I apologize, but I'm experiencing technical difficulties. Please try again."
 
-    def _format_context(self, chunks: List[Dict]) -> str | None:
+    def _format_context(self, chunks: List[Dict]) -> Optional[str]:
         """Format retrieved chunks into context for the LLM."""
         if not chunks:
             return None
@@ -123,7 +123,7 @@ class RAGSystem:
 
         return formatted_context
 
-    def add_documents(self, documents_path: str = None):
+    def add_documents(self, documents_path: Optional[str] = None):
         """Add new documents to the vector store."""
         if documents_path is None:
             documents_path = self.documents_path

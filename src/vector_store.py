@@ -1,25 +1,32 @@
 """
 Vector store implementation using ChromaDB.
+
+This module provides a vector database interface for storing and retrieving
+document embeddings using ChromaDB with cosine similarity search.
 """
 
-# SQLite compatibility fix for Streamlit Cloud
-import sys
-try:
-    __import__('pysqlite3')
-    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except ImportError:
-    pass
+from src.utils import fix_sqlite_compatibility
+
+# Apply SQLite compatibility fix
+fix_sqlite_compatibility()
 
 import chromadb
 from chromadb.utils import embedding_functions
 from typing import List, Dict
 import uuid
 
+
 class VectorStore:
     """ChromaDB-based vector store for document embeddings."""
 
     def __init__(self, persist_directory: str, collection_name: str):
-        """Initialize ChromaDB client and collection."""
+        """
+        Initialize ChromaDB client and collection.
+        
+        Args:
+            persist_directory: Directory path for persistent storage
+            collection_name: Name of the ChromaDB collection
+        """
         self.persist_directory = persist_directory
         self.collection_name = collection_name
 
@@ -36,8 +43,14 @@ class VectorStore:
             metadata={"hnsw:space": "cosine"}  # Use cosine similarity
         )
 
-    def add_documents(self, documents: List[str], metadatas: List[Dict]):
-        """Add documents and their embeddings to the vector store."""
+    def add_documents(self, documents: List[str], metadatas: List[Dict]) -> None:
+        """
+        Add documents and their embeddings to the vector store.
+        
+        Args:
+            documents: List of document texts to add
+            metadatas: List of metadata dictionaries corresponding to documents
+        """
         # Handle empty lists gracefully
         if not documents:
             return
@@ -53,7 +66,16 @@ class VectorStore:
         )
 
     def similarity_search(self, query: str, k: int = 3) -> List[Dict]:
-        """Perform similarity search and return top k results."""
+        """
+        Perform similarity search and return top k results.
+        
+        Args:
+            query: Search query text
+            k: Number of results to return
+            
+        Returns:
+            List of dictionaries containing document, metadata, distance, and id
+        """
         results = self.collection.query(
             query_texts=[query],
             n_results=k

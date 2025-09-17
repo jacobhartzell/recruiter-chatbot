@@ -3,7 +3,7 @@
 # Model settings
 model:
   embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
-  llm_model: "microsoft/DialoGPT-medium"
+  llm_model: "gemini-2.0-flash-001"
   max_tokens: 512
   temperature: 0.7
 
