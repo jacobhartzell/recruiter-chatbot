@@ -22,18 +22,12 @@ class GCPCredentials:
         """Check and return Streamlit-based GCP credentials if available."""
         try:
             # Only try to access secrets if Streamlit is properly initialized
-            self.logger.info(f"Checking Streamlit secrets. hasattr(st, 'secrets'): {hasattr(st, 'secrets')}")
             if hasattr(st, 'secrets'):
                 secret_keys = list(st.secrets.keys()) if hasattr(st.secrets, 'keys') else []
-                self.logger.info(f"Available secret keys: {secret_keys}")
                 if 'gcp_service_account' in st.secrets:
-                    self.logger.info("Found gcp_service_account in Streamlit secrets")
                     return True
-                else:
-                    self.logger.warning("gcp_service_account not found in Streamlit secrets")
         except (ImportError, AttributeError, FileNotFoundError) as e:
             # Streamlit not available or secrets not configured - this is fine
-            self.logger.info(f"Streamlit not available or GCP credentials not found in secrets: {e}")
         
         return False
     
