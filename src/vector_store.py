@@ -31,6 +31,7 @@ class VectorStore:
         self.collection_name = collection_name
 
         # Initialize ChromaDB client with persistence
+        # For local/tests, we rely on default backend (SQLite sufficient with pysqlite shim or native)
         self.client = chromadb.PersistentClient(path=persist_directory)
 
         # Use default embedding function (simpler, no external dependencies)

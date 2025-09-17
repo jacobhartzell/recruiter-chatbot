@@ -5,13 +5,14 @@ requests
 pyyaml
 langchain
 langchain-community
-chromadb
+chromadb==1.1.0
 onnxruntime
 pandas
-numpy
+numpy>=2.0
 nb-clean
 ipykernel
 google-cloud-aiplatform
 google-genai
 google-cloud-logging
 pytest
+pysqlite3-binary

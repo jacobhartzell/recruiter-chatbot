@@ -5,6 +5,7 @@ This module contains shared utilities used across the application.
 """
 
 import sys
+import os
 
 
 def fix_sqlite_compatibility():
@@ -20,3 +21,4 @@ def fix_sqlite_compatibility():
     except ImportError:
         # pysqlite3 not available, use default sqlite3
         pass
+    # Ensure we do not force any alternative DB backend
